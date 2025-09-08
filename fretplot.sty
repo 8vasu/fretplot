@@ -1,0 +1,270 @@
+%% fretplot.sty
+%% Copyright 2025-- Soumendra Ganguly
+%
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+%   https://www.latex-project.org/lppl.txt
+% and version 1.3c or later is part of all distributions of LaTeX
+% version 2008 or later.
+%
+% This work has the LPPL maintenance status `author-maintained'.
+% 
+% The Current Maintainer of this work is Soumendra Ganguly.
+%
+% This work consists of the files fretplot.sty, fretplot.lua,
+% doc_fretplot.tex, doc_fretplot.pdf, README.md, and LICENSE.
+
+%----------------------------------------------------------------------------
+%% Batch generation of scale and chord diagrams for guitar-like instruments.|
+%----------------------------------------------------------------------------
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{fretplot}[2023/07/11 Batch generation of scale and chord diagrams for guitar-like instruments]
+
+\RequirePackage{tikz}
+\usetikzlibrary{shapes.misc}
+
+\directlua{fretplot = require("fretplot")}
+
+%%-------------------------------------------
+%% This section defines the following macros:
+%% \fptotikz
+%% \fptemplate
+%% \fpstemplate
+%% \fpscale
+
+% \fptotikz: compile an input fretplot file to TikZ.
+%
+% #2: path to input fretplot file.
+%
+% #1 (optional): path to output file to which generated TikZ will be written.
+%                If #1 is not specified, then the output TikZ code will be
+%                included inline at the location of the \fptotikz invocation.
+%
+\newcommand*{\fptotikz}[2][]{\directlua{fretplot.fptotikz([[#2]],[[#1]])}}
+
+% \fptemplate: generate a template fretplot file at path #1.
+%
+\newcommand*{\fptemplate}[1]{\directlua{fretplot.fptemplate([[#1]])}}
+
+% \fpstemplate:	generate a template fretplot scale style file at path #1.
+%
+\newcommand*{\fpstemplate}[1]{\directlua{fretplot.fpstemplate([[#1]])}}
+
+% \fpscale: render diagram of (mode of) scale based on input scale formula (degree, pitch
+%           class, or interval) or generate corresponding fretplot file or TikZ code.
+%
+% #1: "|" and/or "|\n"-delimited list (possibly empty) of named argument assignments
+%     of the form key=value (with no surrounding spaces) in any order. The following
+%     is a complete table of such "key"s and their respective default and possible "value"s.
+%     If a key does not have a default value, then the corresponding entry in the table is empty.
+%     In the table, "pitch class" refers to any element of the set {C, C#, D, Eb, E, F, F#, G, Ab, A, Bb, B}.
+%     In the table, "degree" refers to any element of the set {1, b2, 2, b3, 3, 4, b5, 5, b6, 6, b7, 7}.
+%     In the table, "interval" is a positive integer representing the number of semitones
+%     in a musical interval.
+%
+% ---------------------------------------------------------------------------------------------------------------
+% key            | default value | value                                                                        |
+% --------------------------------------------------------------------------------------------------------------|
+% parentroot     | C             | Root of parent scale. This can be any pitch class.                           |
+%                |               | This is ignored if formulatype=p or if "moderoot" is specified.              |
+%                |               | Please see the description of "mode" for more details.                       |
+%---------------------------------------------------------------------------------------------------------------|
+% formulatype    | d             | Type of the formula specified in the key named "formula".                    |
+%                |               | Possible values are {d, p, i}. Here "d" stands for "degree",                 |
+%                |               | "p" stands for "pitch class", and "i" stands for "interval".                 |
+%---------------------------------------------------------------------------------------------------------------|
+% formula        | 1 2 3 4 5 6 7 | Formula of parent scale. This should be a list of degrees                    |
+%                |               | or pitch classes or intervals delimited by " " (single space).               |
+%                |               | The type of this formula is indicated by specifying "formulatype".           |
+%---------------------------------------------------------------------------------------------------------------|
+% mode           | 1             | Mode index of scale. This is specified as a positive integer.                |
+%                |               | This mode will be rendered by \fpscale. Examples: if formulatype=p,          |
+%                |               | "formula=C D E F G A B", and mode=3, then the 3rd mode of the                |
+%                |               | C major scale (E Phrygian) will be rendered. If formulatype=d,               |
+%                |               | "formula=1 2 3 4 5 6 7", mode=2, parentroot=A, and "moderoot" is not         |
+%                |               | specified, then the 2nd mode of the A major scale (which is B Dorian)        |
+%                |               | will be rendered. In the above scenario, if moderoot=A, then                 |
+%                |               | A Dorian will be rendered instead.                                           |
+%---------------------------------------------------------------------------------------------------------------|
+% moderoot       |               | Optional root of mode of scale. This can be any pitch class.                 |
+%                |               | This is ignored if formulatype=p. Please see the description of              |
+%                |               | "mode" for more details.                                                     |
+%---------------------------------------------------------------------------------------------------------------|
+% tuning         | E B G D A E   | Tuning of strings of the instrument. This is specified as a                  |
+%                |               | list of pitch classes delimited by " " (single space).                       |
+%---------------------------------------------------------------------------------------------------------------|
+% numfrets       | 12            | Number of frets on the fingerboard. If the instrument does                   |
+%                |               | not have frets, then one can style them to be transparent                    |
+%                |               | in the render.                                                               |
+%---------------------------------------------------------------------------------------------------------------|
+% styletype      | d             | Specify if the styling of notes should be degree-indexed                     |
+%                |               | or pitch class-indexed. Possible values are {d, p}. Here                     |
+%                |               | "d" stands for "degree" and "p" stands for "pitch class".                    |
+%                |               | The user can customize the actual styles by specifying                       |
+%                |               | the key "scalestylefile".                                                    |
+%---------------------------------------------------------------------------------------------------------------|
+% labeltype      | d             | Specify if the labelling of notes should be degree-indexed                   |
+%                |               | or pitch class-indexed. Possible values are {d, p}. Here                     |
+%                |               | "d" stands for "degree" and "p" stands for "pitch class".                    |
+%                |               | The user can customize the actual labels by specifying                       |
+%                |               | the key "scalestylefile".                                                    |
+%---------------------------------------------------------------------------------------------------------------|
+% outfpfile      |               | Optional path to output fretplot file describing (mode of)                   |
+%                |               | scale. If this is specified, then no TikZ code will be                       |
+%                |               | generated by \fpscale (neither inline nor to "outtikzfile").                 |
+%                |               | One can then make modifications to the output fretplot file                  |
+%                |               | and then generate TikZ code (inline or external file) from                   |
+%                |               | the fretplot file using \fptotikz. The keys "includefpfile"                  |
+%                |               | and "scalestylefile" are used to further customize the rendering.            |
+%                |               | In particular, "includefpfile" is included at the end of                     |
+%                |               | "outfpfile". Even if "outfpfile" is not specified, \fpscale still            |
+%                |               | internally creates a temporary fretplot file which is then converted         |
+%                |               | to TikZ. This temporary fretplot file also includes "includefpfile"          |
+%                |               | at its end, which allows one to customize their render via                   |
+%                |               | "includefpfile" without specifying "outfpfile". The same fretplot            |
+%                |               | file can serve as the "includefpfile" for multiple \fpscale                  |
+%                |               | invocations, which allows for batch manipulation of scale plots.             |
+%                |               | Temporary fretplot files created by \fpscale internally are deleted          |
+%                |               | later automatically.                                                         |
+%---------------------------------------------------------------------------------------------------------------|
+% outtikzfile    |               | Optional path to output file containing TikZ code describing                 |
+%                |               | (mode of) scale. This will be ignored if "outfpfile" is specified.           |
+%                |               | If "outfpfile" is not specified and "outtikzfile" is specified,              |
+%                |               | then \fpscale will not generate inline TikZ code. One can then               |
+%                |               | make modifications to the output TikZ code and use \input to                 |
+%                |               | use it in their document.                                                    |
+%---------------------------------------------------------------------------------------------------------------|
+% includefpfile  |               | Optional path to input fretplot file to be included at the end               |
+%                |               | of "outfpfile" or an equivalent temporary fretplot file created              |
+%                |               | by \fpscale for internal use. If there does not exist a file                 |
+%                |               | at the path specified by "includefpfile", then a new empty file              |
+%                |               | will be created at that path; one can then edit this new file                |
+%                |               | for use in subsequent compilations. For more details, please see             |
+%                |               | "outfpfile".                                                                 |
+%---------------------------------------------------------------------------------------------------------------|
+% scalestylefile |               | Optional path to input fretplot scale style file. This can be                |
+%                |               | used to customize degree and/or pitch class-based styling                    |
+%                |               | and labelling for scale notes. Please see "styletype" and                    |
+%                |               | "labeltype" for additional details.                                          |
+% --------------------------------------------------------------------------------------------------------------|
+%
+% Example usages:
+%
+% C# harmonic minor scale:
+% \fpscale{parentroot=C#|formulatype=d|formula=1 2 b3 4 5 b6 7}
+%
+% 2nd mode of A major scale (B Dorian):
+% \fpscale{parentroot=A|formulatype=i|formula=\fpmaj|mode=2|
+% tuning=E B G D A E|numfrets=12|styletype=d|
+% labeltype=p|scalestylefile=include/styles.fps|
+% includefpfile=include/sclinclude.fp}
+%
+\newcommand*{\fpscale}{\begingroup\catcode`\#=11\relax\fpscalepre}
+\newcommand*{\fpscalepre}[1]{\endgroup\directlua{fretplot.fpscale([[#1]])}}
+
+%%-------------------------------------------------------------------------------------------
+%% This section defines a list of macros that expand to interval formulas for popular scales.
+
+% Minor pentatonic scale
+\newcommand{\fpmpent}{3 2 2 3 2}
+
+% Blues scale
+\newcommand{\fpblues}{3 2 1 1 3 2}
+
+%%
+
+% Major scale
+\newcommand{\fpmaj}{2 2 1 2 2 2 1}
+
+% Jazz minor scale (ascending melodic minor scale)
+\newcommand{\fpjmin}{2 1 2 2 2 2 1}
+
+% Harmonic minor scale
+\newcommand{\fphmin}{2 1 2 2 1 3 1}
+
+%%
+
+% Harmonic major scale
+\newcommand{\fphmaj}{2 2 1 2 1 3 1}
+
+% Double harmonic major scale
+\newcommand{\fpdhmaj}{1 3 1 2 1 3 1}
+
+% Neapolitan major scale
+\newcommand{\fpnmaj}{1 2 2 2 2 2 1}
+
+% Neapolitan minor scale
+\newcommand{\fpnmin}{1 2 2 2 1 3 1}
+
+% Hungarian major scale
+\newcommand{\fphunmaj}{3 1 2 1 2 1 2}
+
+%%
+
+% Bebop major scale
+\newcommand{\fpbmaj}{2 2 1 2 1 1 2 1}
+
+% Bebop minor scale
+\newcommand{\fpbmin}{2 1 2 2 2 1 1 1}
+
+% Bebop dominant scale
+\newcommand{\fpbdom}{2 2 1 2 2 1 1 1}
+
+% Lydian dominant bebop scale
+\newcommand{\fpldbeb}{2 2 2 1 2 1 1 1}
+
+% Phrygian dominant bebop scale
+\newcommand{\fppdbeb}{1 3 1 2 1 2 1 1}
+
+%%
+
+% Chromatic scale
+\newcommand{\fpchr}{1 1 1 1 1 1 1 1 1 1 1 1}
+
+% Whole tone scale
+\newcommand{\fpwt}{2 2 2 2 2 2}
+
+% Two whole tones scale
+\newcommand{\fptwowt}{4 4 4}
+
+% Three whole tones scale
+\newcommand{\fpthreewt}{6 6}
+
+% Monotonic scale
+\newcommand{\fpmon}{12}
+
+%%
+
+% Augmented scale
+\newcommand{\fpaug}{3 1 3 1 3 1}
+
+% Tritone scale
+\newcommand{\fptrit}{1 3 2 1 3 2}
+
+% Whole half diminished scale
+\newcommand{\fpwhdim}{2 1 2 1 2 1 2 1}
+
+%%
+
+% Major seventh arpeggio
+\newcommand{\fpmajsevenarp}{4 3 4 1}
+
+% Dominant seventh arpeggio
+\newcommand{\fpdomsevenarp}{4 3 3 2}
+
+% Minor seventh arpeggio
+\newcommand{\fpminsevenarp}{3 4 3 2}
+
+% Half diminished seventh arpeggio
+\newcommand{\fphdimsevenarp}{3 3 4 2}
+
+% Diminished seventh arpeggio
+\newcommand{\fpdimsevenarp}{3 3 3 3}
+
+% Minor major seventh arpeggio
+\newcommand{\fpminmajsevenarp}{3 4 4 1}
+
+\endinput

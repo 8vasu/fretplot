@@ -1,0 +1,17 @@
+# Ignore LaTeX auxiliary files
+*.aux
+*.log
+*.out
+*.toc
+
+# Ignore zip files
+*.zip
+
+# Ignore specific files
+cover.pdf
+
+# Ignore directories
+figures/
+include/
+fretplot/
+

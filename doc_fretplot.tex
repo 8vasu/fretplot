@@ -1,0 +1,755 @@
+%% doc_fretplot.tex
+%% Copyright 2025-- Soumendra Ganguly
+%
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3
+% of this license or (at your option) any later version.
+% The latest version of this license is in
+%   https://www.latex-project.org/lppl.txt
+% and version 1.3c or later is part of all distributions of LaTeX
+% version 2008 or later.
+%
+% This work has the LPPL maintenance status `author-maintained'.
+% 
+% The Current Maintainer of this work is Soumendra Ganguly.
+%
+% This work consists of the files fretplot.sty, fretplot.lua,
+% doc_fretplot.tex, doc_fretplot.pdf, README.md, and LICENSE.
+
+%----------------------------------------------------------------------------
+%% Batch generation of scale and chord diagrams for guitar-like instruments.|
+%----------------------------------------------------------------------------
+
+\documentclass[12pt,letterpaper]{article}
+\usepackage{./fretplot}
+
+\usepackage[letterpaper,top=1cm,bottom=2cm]{geometry} % Adjust 'bottom' as needed
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.misc}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{ % \circled
+    \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyfoot[C]{\circled{\scriptsize\thepage}} % Center page number in footer
+\fancyhead{} % Clear header
+\renewcommand{\headrulewidth}{0pt} % Remove header line
+\renewcommand{\footrulewidth}{0pt} % Remove footer line
+
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue]{hyperref} % for links in TOC and web URLs
+\usepackage{ulem} % for \uline
+\usepackage{float} % for [H] placement specifier in tables
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstset{
+  language=[LaTeX]TeX,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{purple},
+  numbers=left,
+  backgroundcolor=\color{white},
+  breaklines=true,
+  showstringspaces=false
+}
+
+\lstdefinelanguage{fretplot}{
+  emph={include,flip,void},
+  morekeywords={onf0,sovf,zoom,rotn,numfrt,numstr,frets,strings,notes,barres,fx,sx,bx,nx,fl,sl,nl},
+  sensitive=true,
+  morecomment=[l]{\#}
+}
+
+\lstset{
+  language=fretplot,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  emphstyle=\color{brown}\bfseries,
+  commentstyle=\color{purple},
+  numbers=left,
+  backgroundcolor=\color{white},
+}
+
+\title{The \texttt{fretplot} package}
+\author{Author and maintainer: Soumendra Ganguly\\\href{https://soumendraganguly.com}{\texttt{soumendraganguly.com}}}
+\date{Copyright 2025-- Soumendra Ganguly}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\tableofcontents
+
+\newpage
+
+\section{Introduction}
+
+The \textit{fretplot} Lua\TeX\ package provides batch generation of scale and chord diagrams for plucked string instruments, such as the guitar.\\
+
+It is designed for high flexibility, automation, and customization via simple yet powerful custom file formats for describing fretboard diagrams, which allow for easy batch generation of diagrams. To complement the high customizability, the package also comes with sensible yet attractive default settings for the diagrams.\\
+
+The package also provides some easy-to-use \LaTeX\ macros that understand the underlying music theory, allowing one to render, for example, a guitar scale diagram by specifying the musical scale or scale type via built-in macros, or even more directly via degree, pitch class, or interval formulae.
+
+\newpage
+
+\section{\LaTeX\ macros}
+
+This package defines the following user-facing macros:
+
+\begin{itemize}
+  \item \verb|\fptotikz|
+  \item \verb|\fptemplate|
+  \item \verb|\fpstemplate|
+  \item \verb|\fpscale|
+\end{itemize}
+
+\subsection{\texttt{\textbackslash fptotikz}}
+
+\begin{itemize}
+  \item[] \uline{Syntax:} \texttt{\textbackslash fptotikz[OUTPUT\_TIKZ\_FILE]\{INPUT\_FP\_FILE\}}
+  \item[] \uline{Description:} compile an input fretplot file to Ti\textit{k}Z.
+  \item[] \uline{Arguments:}
+    \begin{itemize}
+      \item \texttt{INPUT\_FP\_FILE}: path to input fretplot file.
+      \item \texttt{OUTPUT\_TIKZ\_FILE} (optional): path to output file to which generated Ti\textit{k}Z will be written. If \texttt{OUTPUT\_TIKZ\_FILE} is not specified, then the output Ti\textit{k}Z code will be included inline at the location of the \texttt{\textbackslash fptotikz} invocation.
+    \end{itemize}
+\end{itemize}
+
+\subsection{\texttt{\textbackslash fptemplate}}
+
+\begin{itemize}
+  \item[] \uline{Syntax:} \texttt{\textbackslash fptemplate\{OUTPUT\_FP\_FILE\}}
+  \item[] \uline{Description:} generate a template fretplot file.
+  \item[] \uline{Arguments:} \texttt{OUTPUT\_FP\_FILE}: path to output fretplot file.
+\end{itemize}
+
+\subsection{\texttt{\textbackslash fpstemplate}}
+
+\begin{itemize}
+  \item[] \uline{Syntax:} \texttt{\textbackslash fpstemplate\{OUTPUT\_FPS\_FILE\}}
+  \item[] \uline{Description:} generate a template fretplot scale style file.
+  \item[] \uline{Arguments:} \texttt{OUTPUT\_FPS\_FILE}: path to output fretplot scale style file.
+\end{itemize}
+
+\subsection{\texttt{\textbackslash fpscale}}
+
+\begin{itemize}
+  \item[] \uline{Syntax:} \texttt{\textbackslash fpscale\{ARGS\}}
+  \item[] \uline{Description:} render diagram of (mode of) scale based on input scale formula (degree, pitch class, or interval) or generate corresponding fretplot file or Ti\textit{k}Z code.
+  \item[] \uline{Arguments:} \texttt{ARGS}: \texttt{|} and/or \texttt{|\textbackslash n}-delimited list (possibly empty) of named argument assignments of the form \texttt{key=value} (with no surrounding spaces) in any order. Some of the subsequent pages of this section contain 2 tables:
+    \begin{itemize}
+    \item A complete table of keys for \texttt{ARGS} and their respective default and possible values. If a key does not have a default value, then the corresponding entry in the table is empty.
+        \begin{itemize}
+        \item In the table, a \textit{pitch class} refers to any element of the set
+\begin{center}
+\texttt{\{C, C\#, D, Eb, E, F, F\#, G, Ab, A, Bb, B\}}.
+\end{center}
+\item In the table, a \textit{degree} is any element of the set
+\begin{center}
+\texttt{\{1, b2, 2, b3, 3, 4, b5, 5, b6, 6, b7, 7\}}.
+\end{center}
+\item In the table, an \textit{interval} is a positive integer representing the number of semitones in a musical interval.
+        \end{itemize}
+    \item A table containing a list of macros that expand to interval formulas for popular scale types.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Examples}
+
+Create directories \texttt{include} and \texttt{figures} in the same directory as your main document.
+
+\begin{lstlisting}[language={[LaTeX]TeX},basicstyle=\scriptsize\ttfamily,emphstyle=]
+\documentclass[12pt,letterpaper]{article}
+\usepackage{fretplot}
+
+\begin{document}
+
+\begin{figure}[H]
+\fpscale{parentroot=C#|formulatype=d|formula=1 2 b3 4 5 b6 7}
+\caption{C$\sharp$ harmonic minor scale}
+\end{figure}
+
+% Create a fretplot file include/sclinclude.fp
+% and a fretplot scale style file include/styles.fps.
+% Comment these 2 lines out after the first run if
+% you do not want to overwrite them in subsequent runs.
+\fptemplate{include/sclinclude.fp}
+\fpstemplate{include/styles.fps}
+
+% Use fptotikz to test include/sclinclude.fp
+% generated by \fptemplate.
+\begin{figure}[H]
+\fptotikz{include/sclinclude.fp}
+\caption{Test \texttt{include/sclinclude.fp} generated by \texttt{\textbackslash fptemplate}}
+\end{figure}
+
+% Also test the TikZ file generation capability of
+% \fptotikz, although the rest of the code does not
+% depend on this. Note that this will merely create
+% the file figures/sclinclude.tex containing the
+% TikZ code, but not include it in the document.
+\fptotikz[figures/sclinclude.tex]{include/sclinclude.fp}
+
+\begin{figure}[H]
+\fpscale{parentroot=A|formulatype=i|formula=\fpmaj|mode=2|
+tuning=E B G D A E|numfrets=12|styletype=d|
+labeltype=p|scalestylefile=include/styles.fps|
+includefpfile=include/sclinclude.fp}
+\caption{2\textsuperscript{nd} mode of A major scale (B Dorian)}
+\end{figure}
+
+\end{document}
+\end{lstlisting}
+
+Compile the above code with \begin{center}\texttt{lualatex my\_document.tex}\end{center} to get the following output:
+
+% Start of code for the first set of figures
+%--------------------------------------------
+
+\begin{figure}[H]
+\fpscale{parentroot=C#|formulatype=d|formula=1 2 b3 4 5 b6 7}
+\caption{C$\sharp$ harmonic minor scale}
+\end{figure}
+
+% Create a fretplot file include/sclinclude.fp
+% and a fretplot scale style file include/styles.fps.
+% Comment these 2 lines out after the first run if
+% you do not want to overwrite them in subsequent runs.
+\fptemplate{include/sclinclude.fp}
+\fpstemplate{include/styles.fps}
+
+% Use fptotikz to test include/sclinclude.fp
+% generated by \fptemplate.
+\begin{figure}[H]
+\fptotikz{include/sclinclude.fp}
+\caption{Test \texttt{include/sclinclude.fp} generated by \texttt{\textbackslash fptemplate}}
+\end{figure}
+
+% Also test the TikZ file generation capability of
+% \fptotikz, although the rest of the code does not
+% depend on this. Note that this will merely create
+% the file figures/sclinclude.tex containing the
+% TikZ code, but not include it in the document.
+\fptotikz[figures/sclinclude.tex]{include/sclinclude.fp}
+
+\begin{figure}[H]
+\fpscale{parentroot=A|formulatype=i|formula=\fpmaj|mode=2|
+tuning=E B G D A E|numfrets=12|styletype=d|
+labeltype=p|scalestylefile=include/styles.fps|
+includefpfile=include/sclinclude.fp}
+\caption{2\textsuperscript{nd} mode of A major scale (B Dorian)}
+\end{figure}
+
+% End of code for the first set of figures
+%------------------------------------------
+
+Play around with the generated files \texttt{include/sclinclude.fp} and \texttt{include/styles.fps} to customize the B Dorian figure. You can also edit the generated Ti\textit{k}Z code \texttt{figures/sclinclude.tex} directly.
+
+% Old experiments:
+%------------------
+
+% \usetikzlibrary{external}
+% \tikzexternalize % activate
+% \tikzsetexternalprefix{figures/}
+
+% 1 newline allowed immediately after |
+
+% \begingroup
+%    \catcode`\#=11
+% \directlua{
+% fretplot.scale_i([[A]], [[2 2 1 2 2 2 1]], [[E B G D A E]], 12, [[d]], [[d]], [[styles.fps]], [[sclnote.fp]], [[sclinclude.fp]])
+% }
+% \endgroup
+
+% \scl{root=A|formulatype=d|formula=1 2 3 4 5 6 7|
+% tuning=E B G D A E|numfrets=12|styletype=d|
+% labeltype=d|stylefile=styles.fps|outfpfile=sclnote.fp|
+% includefile=sclinclude.fp}
+
+% \fretplot{sclnote.fp}
+
+% \input{oout.tex}
+
+% \scl{root=A|formulatype=d|formula=1 2 3 4 5 6 7|
+% tuning=E B G D A E|numfrets=12|styletype=d|
+% labeltype=d|stylefile=styles.fps|outtikzfile=oo.tex|
+% includefile=sclinclude.fp}
+
+% \input{oo.tex}
+
+% \begin{figure}[H]
+%   \centering
+%   \begin{minipage}{0.5\textwidth}
+%     \fbox{\fretplot{template.fp}}
+%   \end{minipage}
+%   \begin{minipage}{0.5\textwidth}
+%     \fbox{\scl{root=A|formulatype=d|formula=1 b2 2 b3 3 4 b5 5 b6 6 b7 7|
+%       tuning=E B G D A E|numfrets=12|styletype=p|
+%       labeltype=p|stylefile=styles.fps|
+%       includefile=sclinclude.fp}}
+%   \end{minipage}
+% \end{figure}
+
+% \begin{figure}[h]
+%   \hspace{-0.5in}
+%   \begin{minipage}{0.4\textwidth}
+%     \fbox{\fretplot{testtemplate.fp}}
+%     \caption{A major triad barre chord}
+%   \end{minipage}
+%   \hspace{1.2in}
+%   \begin{minipage}{0.4\textwidth}
+%     \fbox{\fretplot{testtemplate.fp}}
+%     \caption{A major triad barre chord}
+%   \end{minipage}
+% \end{figure}
+
+\subsection{Tables}
+
+This continues on the next page.
+
+\newpage
+
+\begin{table}[H]\tiny\begin{tabular}{|l|l|p{8cm}|}
+\hline
+
+&&\\
+KEY & DEFAULT VALUE & VALUE\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{parentroot} & \texttt{C} & Root of parent scale. This can be any pitch class. This is ignored if \texttt{formulatype=p} or if \texttt{moderoot} is specified. Please see the description of \texttt{mode} for more details.\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{formulatype} & \texttt{d} & Type of the formula specified in the key named \texttt{formula}. Possible values are \texttt{\{d, p, i\}}. Here \texttt{d} stands for \textit{degree}, \texttt{p} stands for \textit{pitch class}, and \texttt{i} stands for \textit{interval}.\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{formula} & \texttt{1 2 3 4 5 6 7} & Formula of parent scale. This should be a list of degrees or pitch classes or intervals delimited by single ordinary space characters (ASCII 32). The type of this formula is indicated by specifying \texttt{formulatype}.\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{mode} & \texttt{1} & Mode index of scale. This is specified as a positive integer. This mode will be rendered by \texttt{\textbackslash fpscale}. Examples: if \texttt{formulatype=p}, \texttt{formula=C D E F G A B}, and \texttt{mode=3}, then the 3rd mode of the C major scale (E Phrygian) will be rendered. If \texttt{formulatype=d}, \texttt{formula=1 2 3 4 5 6 7}, \texttt{mode=2}, \texttt{parentroot=A}, and \texttt{moderoot} is not specified, then the 2nd mode of the A major scale (which is B Dorian) will be rendered. In the above scenario, if \texttt{moderoot=A}, then A Dorian will be rendered instead.\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{moderoot} &  & Optional root of mode of scale. This can be any pitch class. This is ignored if \texttt{formulatype=p}. Please see the description of \texttt{mode} for more details.\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{tuning} & \texttt{E B G D A E} & Tuning of strings of the instrument. This is specified as a list of pitch classes delimited by single ordinary space characters (ASCII 32).\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{numfrets} & \texttt{12} & Number of frets on the fingerboard. If the instrument does not have frets, then one can style them to be transparent in the render.\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{styletype} & \texttt{d} & Specify if the styling of notes should be degree-indexed or pitch class-indexed. Possible values are \texttt{\{d, p\}}. Here \texttt{d} stands for \textit{degree} and \texttt{p} stands for \textit{pitch class}. The user can customize the actual styles by specifying the key \texttt{scalestylefile}.\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{labeltype} & \texttt{d} & Specify if the labelling of notes should be degree-indexed or pitch class-indexed. Possible values are \texttt{\{d, p\}}. Here \texttt{d} stands for \textit{degree} and \texttt{p} stands for \textit{pitch class}. The user can customize the actual labels by specifying the key \texttt{scalestylefile}.\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{outfpfile} &  & Optional path to output fretplot file describing (mode of) scale. If this is specified, then no Ti\textit{k}Z code will be generated by \texttt{\textbackslash fpscale} (neither inline nor to \texttt{outtikzfile}). One can then make modifications to the output fretplot file and then generate Ti\textit{k}Z code (inline or external file) from the fretplot file using \texttt{\textbackslash fptotikz}. The keys \texttt{includefpfile} and \texttt{scalestylefile} are used to further customize the rendering. In particular, \texttt{includefpfile} is included at the end of \texttt{outfpfile}. Even if \texttt{outfpfile} is not specified, \texttt{\textbackslash fpscale} still internally creates a temporary fretplot file which is then converted to Ti\textit{k}Z. This temporary fretplot file also includes \texttt{includefpfile} at its end, which allows one to customize their render via \texttt{includefpfile} without specifying \texttt{outfpfile}. The same fretplot file can serve as the \texttt{includefpfile} for multiple \texttt{\textbackslash fpscale} invocations, which allows for batch manipulation of scale plots. Temporary fretplot files created by \texttt{\textbackslash fpscale} internally are deleted later automatically.\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{outtikzfile} &  & Optional path to output file containing Ti\textit{k}Z code describing (mode of) scale. This will be ignored if \texttt{outfpfile} is specified. If \texttt{outfpfile} is not specified and \texttt{outtikzfile} is specified, then \texttt{\textbackslash fpscale} will not generate inline Ti\textit{k}Z code. One can then make modifications to the output Ti\textit{k}Z code and use \texttt{\textbackslash input} to use it in their document.\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{includefpfile} &  & Optional path to input fretplot file to be included at the end of \texttt{outfpfile} or an equivalent temporary fretplot file created by \texttt{\textbackslash fpscale} for internal use. If there does not exist a file at the path specified by \texttt{includefpfile}, then a new empty file will be created at that path; one can then edit this new file for use in subsequent compilations. For more details, please see \texttt{outfpfile}.\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{scalestylefile} &  & Optional path to input fretplot scale style file. This can be used to customize degree and/or pitch class-based styling and labelling for scale notes. Please see \texttt{styletype} and \texttt{labeltype} for additional details.\\
+&&\\
+
+\hline
+\end{tabular}\caption{Key-value pairs for \texttt{\textbackslash fpscale}}\end{table}
+\normalsize
+
+\newpage
+
+\begin{table}[H]\tiny\begin{tabular}{|l|l|l|}
+\hline
+
+&&\\
+MACRO & INTERVAL FORMULA IN SEMITONES & DESCRIPTION\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{\textbackslash fpmpent} & 3 2 2 3 2 & Minor pentatonic scale\\
+\texttt{\textbackslash fpblues} & 3 2 1 1 3 2 & Blues scale\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{\textbackslash fpmaj} & 2 2 1 2 2 2 1 & Major scale\\
+\texttt{\textbackslash fpjmin} & 2 1 2 2 2 2 1 & Jazz minor scale (ascending melodic minor scale)\\
+\texttt{\textbackslash fphmin} & 2 1 2 2 1 3 1 & Harmonic minor scale\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{\textbackslash fphmaj} & 2 2 1 2 1 3 1 & Harmonic major scale\\
+\texttt{\textbackslash fpdhmaj} & 1 3 1 2 1 3 1 & Double harmonic major scale\\
+\texttt{\textbackslash fpnmaj} & 1 2 2 2 2 2 1 & Neapolitan major scale\\
+\texttt{\textbackslash fpnmin} & 1 2 2 2 1 3 1 & Neapolitan minor scale\\
+\texttt{\textbackslash fphunmaj} & 3 1 2 1 2 1 2 & Hungarian major scale\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{\textbackslash fpbmaj} & 2 2 1 2 1 1 2 1 & Bebop major scale\\
+\texttt{\textbackslash fpbmin} & 2 1 2 2 2 1 1 1 & Bebop minor scale\\
+\texttt{\textbackslash fpbdom} & 2 2 1 2 2 1 1 1 & Bebop dominant scale\\
+\texttt{\textbackslash fpldbeb} & 2 2 2 1 2 1 1 1 & Lydian dominant bebop scale\\
+\texttt{\textbackslash fppdbeb} & 1 3 1 2 1 2 1 1 & Phrygian dominant bebop scale\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{\textbackslash fpchr} & 1 1 1 1 1 1 1 1 1 1 1 1 & Chromatic scale\\
+\texttt{\textbackslash fpwt} & 2 2 2 2 2 2 & Whole tone scale\\
+\texttt{\textbackslash fptwowt} & 4 4 4 & Two whole tones scale\\
+\texttt{\textbackslash fpthreewt} & 6 6 & Three whole tones scale\\
+\texttt{\textbackslash fpmon} & 12 & Monotonic scale\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{\textbackslash fpaug} & 3 1 3 1 3 1 & Augmented scale\\
+\texttt{\textbackslash fptrit} & 1 3 2 1 3 2 & Tritone scale\\
+\texttt{\textbackslash fpwhdim} & 2 1 2 1 2 1 2 1 & Whole half diminished scale\\
+&&\\
+
+\hline
+
+&&\\
+\texttt{\textbackslash fpmajsevenarp} & 4 3 4 1 & Major seventh arpeggio\\
+\texttt{\textbackslash fpdomsevenarp} & 4 3 3 2 & Dominant seventh arpeggio\\
+\texttt{\textbackslash fpminsevenarp} & 3 4 3 2 & Minor seventh arpeggio\\
+\texttt{\textbackslash fphdimsevenarp} & 3 3 4 2 & Half diminished seventh arpeggio\\
+\texttt{\textbackslash fpdimsevenarp} & 3 3 3 3 & Diminished seventh arpeggio\\
+\texttt{\textbackslash fpminmajsevenarp} & 3 4 4 1 & Minor major seventh arpeggio\\
+&&\\
+
+\hline
+\end{tabular}\caption{Macros for interval formulae of popular scale types}\end{table}
+\normalsize
+
+\newpage
+
+\section{The fretplot file format}
+
+A \textit{fretplot file}, \textit{fp file}, or \texttt{.fp} file describes the layout and appearance of a fretboard diagram.
+
+\subsection{Syntax}
+
+\begin{itemize}
+\item Comment lines start with \texttt{\#}. Comment lines and empty lines are ignored.
+\item Every other line of a fretplot file will have lines of form \texttt{firstword lots of data}, where \texttt{firstword} and \texttt{lots of data} must be separated by a single ordinary space character (ASCII 32), \texttt{lots of data} cannot be empty, and the first character of \texttt{lots of data} cannot be a whitespace character (space, tab, newline, or anything that matches \texttt{\%s} in Lua).
+\item
+  \begin{itemize}
+  \item Note notation: \texttt{<STRINGINDEX,FRETINDEX>}\\Example: \texttt{<6,5>}
+
+  \item Barre notation: \texttt{<STARTSTRINGINDEX-ENDSTRINGINDEX,FRETINDEX>}\\Example: \texttt{<1-6,5>}
+  \end{itemize}
+\item Barres never have labels. Frets, strings, and notes by default have no labels, but can be specified as follows:
+  \begin{itemize}
+    \item Frets: \texttt{flFRETINDEX LABEL}\\Example: \texttt{fl3 3}
+    \item Strings: \texttt{slSTRINGINDEX LABEL}\\Example: \texttt{sl1 \{\textbackslash Large e\}}
+    \item Notes: \texttt{nl<STRINGINDEX,FRETINDEX> LABEL}\\Example: \texttt{nl<6,5> \{\textbackslash Large A\}}
+  \end{itemize}
+\item To include another fretplot file at the current location of a fretplot file, use \texttt{include FILEPATH}.
+\end{itemize}
+
+\subsection{Parameters}
+
+All available parameters that can be used in a fretplot file are listed in the table on the next page. Operations are case-sensitive and must be written exactly as shown.
+
+\newpage
+
+\begin{table}[H]\tiny\hspace{-2.5cm}\begin{tabular}{|l|p{1.5cm}|l|p{2.5cm}|p{1pt}|l|p{2.5cm}|l|}
+\hline
+
+&&&&&&&\\
+TYPE & POSSIBLE VALUES & OPERATIONS & OP DESCRIPTION & & PARAMETERS & PARAM DESC & DEFAULT PARAM VALUE\\
+&&&&&&&\\
+
+\hline
+
+&&&&&&&\\
+Boolean & \texttt{True}, \texttt{False} & \texttt{flip PARAMETER} & negate Boolean parameter named \texttt{PARAMETER} & & \texttt{onf0} & draw notes directly on top of fret 0 (nut of guitar) if \texttt{True} and not if \texttt{False}&\texttt{False}\\
+&&&&&&&\\
+\cline{6-8}
+&&&&&&&\\
+&&&&&\texttt{sovf}& draw strings over frets if \texttt{True} and frets over strings if \texttt{False}&\texttt{True}\\
+&&&&&&&\\
+
+\hline
+
+&&&&&&&\\
+&&\texttt{+PARAMETER VALUE} & add literal numerical value \texttt{VALUE} to numerical parameter named \texttt{PARAMETER}&&&&\\
+&&&&&&&\\
+\cline{3-4}
+&&&&&&&\\
+&&\texttt{-PARAMETER VALUE} & subtract literal numerical value \texttt{VALUE} from numerical parameter named \texttt{PARAMETER}&&&&\\
+&&&&&\texttt{zoom}&Factor by which the diagram will be scaled&\texttt{1.0}\\
+\cline{3-4}
+&&&&&&&\\
+\cline{6-8}
+Numerical & Any numerical value & \texttt{*PARAMETER VALUE} & multiply numerical parameter named \texttt{PARAMETER} by literal numerical value \texttt{VALUE}&&&&\\
+&&&&&\texttt{rotn}&Angle (in degrees) by which the diagram will be rotated &\texttt{0}\\
+\cline{3-4}
+&&&&&&&\\
+\cline{6-8}
+&&\texttt{/PARAMETER VALUE} & divide numerical parameter named \texttt{PARAMETER} by literal numerical value \texttt{VALUE}&&&&\\
+&&&&&\texttt{numfrt}& Number of frets &\texttt{12}\\
+\cline{3-4}
+&&&&&&&\\
+\cline{6-8}
+&&\texttt{\%PARAMETER VALUE} & mod numerical parameter named \texttt{PARAMETER} by literal numerical value \texttt{VALUE}&&&&\\
+&&&&&\texttt{numstr}& Number of strings &\texttt{6}\\
+\cline{3-4}
+&&&&&&&\\
+&&\texttt{\textasciicircum PARAMETER VALUE} & raise numerical parameter named \texttt{PARAMETER} to the power of literal numerical value \texttt{VALUE}&&&&\\
+&&&&&&&\\
+
+\hline
+
+&&&&&&&\\
+&&&&&\texttt{frets}&List of fret indices&\texttt{0 1 2 3 4 5 6 7 8 9 10 11 12}\\
+&&&&&&&\\
+\cline{6-8}
+&& \texttt{void PARAMETER} & empty the list parameter named \texttt{PARAMETER}&&&&\\
+&&&&&&&\\
+\cline{3-4}
+&&&&&\texttt{strings}&List of string indices&\texttt{1 2 3 4 5 6}\\
+&&&&&&&\\
+\cline{6-8}
+List& List of items delimited by single ordinary space characters (ASCII 32), or the \textit{empty list} &\texttt{>PARAMETER VALUE} & extend list parameter named \texttt{PARAMETER} by literal list value \texttt{VALUE}&&&&\\
+\cline{3-4}
+&&&&&\texttt{notes}&List of notes &empty list\\
+&&&&&&&\\
+\cline{6-8}
+&&\texttt{<PARAMETER VALUE} & remove values in literal list value \texttt{VALUE} from list parameter named \texttt{PARAMETER}&&&&\\
+&&&&&&&\\
+&&&&&\texttt{barres}& List of barres &empty list\\
+&&&&&&&\\
+
+\hline
+
+&&&&&&&\\
+&&&&&\texttt{fx}&Fret style&\texttt{solid,line width=0.6,color=black}\\
+&&&&&&&\\
+\cline{6-8}
+&&&&&&&\\
+&&&&&\texttt{sx}&String style &\texttt{solid,line width=0.6,color=black}\\
+&&&&&&&\\
+\cline{6-8}
+&&&&&&&\\
+Style& List of PGF/Ti\textit{k}Z styles delimited by single \texttt{,} (comma) characters &\texttt{\&PARAMETER VALUE} & extend style parameter named \texttt{PARAMETER} by literal comma-delimited collection of styles \texttt{VALUE}&&&&\\
+&&&&&&&\\
+&&&&&\texttt{bx}&Barre style &\texttt{fill=black,draw=black}\\
+&&&&&&&\\
+\cline{6-8}
+&&&&&&&\\
+&&&&&\texttt{nx}& Note style &\texttt{shape=rectangle,draw=black,text=white,fill=black}\\
+&&&&&&&\\
+
+\hline
+\end{tabular}\caption{Parameters for fretplot files}\end{table}
+\normalsize
+
+\subsection{Examples}
+
+The following is an example fretplot file that demonstrates the use of some parameters and operations.
+
+\begin{lstlisting}[language=fretplot,basicstyle=\scriptsize\ttfamily]
+# Example comment line
+zoom 1.0
+rotn 0
+onf0 False
+sovf True
+numfrt 12
+frets 0 1 2 3 4 5 6 7 8 9 10 11 12
+numstr 6
+strings 1 2 3 4 5 6
+
+fx0 solid,line width=1.2,color=black
+fx1 solid,line width=0.6,color=brown
+
+fl3 3
+fl5 5
+
+sx1 solid,line width=0.5,color=black
+
+sl1 {\scriptsize e}
+
+# Another comment line
+notes <6,5> <3,6> <4,7> <5,7> <2,5> <1,5>
+nx<6,5> shape=circle,draw=red,text=white,fill=red,inner sep=1.5
+nl<6,5> {\scriptsize A}
+
+nl<6,5> 1
+nx<6,5> shape=rectangle,draw=red,text=blue,fill=white,fill opacity=0.5,inner sep=1.0
+
+>notes <1,0> <1,1>
+<notes <5,5> <1,5> <2,2>
+
+nl<1,1> 1
+nx<1,1> shape=circle,draw=red,text=blue,fill=white,inner sep=1.0
+
+&nx<2,5> draw=red,shape=circle
+
+flip onf0
+
++rotn 90
+/rotn 2
+%numstr 4
+-rotn 45
+\end{lstlisting}
+
+The following fretplot file describes the A major triad barre chord, but strings and frets are not labelled for simplicity:
+
+\begin{lstlisting}[language=fretplot,basicstyle=\scriptsize\ttfamily]
+rotn -90
+
+# A major triad barre chord
+
+barres <1-6,5>
+bx<1-6,5> fill=black, draw=black
+
+notes <6,5> <3,6> <4,7> <5,7> <2,5> <1,5>
+
+nx<6,5> shape=circle,draw=red,text=white,fill=red,inner sep=1.5
+nl<6,5> {\scriptsize A}
+
+nx<5,7> shape=circle,draw=red,text=blue,fill=white,inner sep=1.7
+nl<5,7> {\scriptsize E}
+
+nx<4,7> shape=circle,draw=red,text=white,fill=red,inner sep=1.5
+nl<4,7> {\scriptsize A}
+
+nx<3,6> shape=circle,draw=red,text=blue,fill=white,inner sep=0.3
+nl<3,6> {\scriptsize C$\sharp$}
+
+nx<2,5> shape=circle,draw=red,text=blue,fill=white,inner sep=1.7
+nl<2,5> {\scriptsize E}
+
+nx<1,5> shape=circle,draw=red,text=white,fill=red,inner sep=1.5
+nl<1,5> {\scriptsize A}
+\end{lstlisting}
+
+Save the above fretplot file as \texttt{amaj.fp}. Include it in a \LaTeX\ document as follows:
+
+\begin{lstlisting}[language={[LaTeX]TeX},basicstyle=\scriptsize\ttfamily]
+\documentclass[12pt,letterpaper]{article}
+\usepackage{fretplot}
+
+\begin{document}
+
+\begin{figure}[H]
+\centering
+  \fptotikz{amaj.fp}
+  \caption{A major triad barre chord}
+\end{figure}
+
+\end{document}
+\end{lstlisting}
+
+Compile the above code with \begin{center}\texttt{lualatex my\_document.tex}\end{center} to get the following output:
+
+\begin{figure}[H]
+\centering
+  \fptotikz{include/amaj.fp}
+  \caption{A major triad barre chord}
+\end{figure}
+
+\newpage
+
+\section{The fretplot scale style file format}
+
+A \textit{fretplot scale style file}, \textit{fps file}, or \texttt{.fps} file customizes the appearance and labels of notes in a scale, based on pitch class or degree.
+
+\subsection{Syntax}
+
+\begin{itemize}
+\item A \textit{pitch class} is any element of the set
+
+\begin{center}
+\texttt{\{C, C\#, D, Eb, E, F, F\#, G, Ab, A, Bb, B\}}.
+\end{center}
+\item A \textit{degree} is any element of the set
+
+\begin{center}
+\texttt{\{1, b2, 2, b3, 3, 4, b5, 5, b6, 6, b7, 7\}}.
+\end{center}
+
+\item Each line assigns a style or label to a pitch class or degree:
+
+\begin{itemize}
+  \item Label based on pitch class: \texttt{lPITCHCLASS LABEL}.
+  \item Label based on degree: \texttt{lDEGREE LABEL}.
+  \item PGF/Ti\textit{k}Z style based on pitch class: \texttt{xPITCHCLASS STYLE}.
+  \item PGF/Ti\textit{k}Z style based on degree: \texttt{xDEGREE STYLE}.
+\end{itemize}
+\end{itemize}
+
+\subsection{An example}
+
+\begin{lstlisting}[commentstyle=,basicstyle=\scriptsize\ttfamily,numbers=left]
+lC {\scriptsize C}
+lC# {\tiny C$\sharp$}
+lD {\scriptsize D}
+lEb {\tiny E$\flat$}
+
+xC shape=circle,draw=red,text=blue,fill=white,inner sep=1.0
+xC# shape=circle,draw=red,text=blue,fill=white,inner sep=1.0
+
+l1 {\scriptsize 1}
+lb2 {\tiny $\flat$2}
+
+x1 shape=circle,draw=red,text=white,fill=red,inner sep=1.0
+xb2 shape=circle,draw=red,text=blue,fill=white,inner sep=1.0
+\end{lstlisting}
+\end{document}
