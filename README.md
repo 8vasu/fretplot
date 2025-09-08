@@ -1,6 +1,6 @@
 # The `fretplot` package
 
-![CoverImage](cover.svg)
+<img src="cover.svg" alt="CoverImage" width="400" />
 
 **Author and maintainer:** [Soumendra Ganguly](https://soumendraganguly.com)  
 **Copyright 2025– Soumendra Ganguly**
