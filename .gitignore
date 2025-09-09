@@ -9,10 +9,9 @@
 
 # Ignore specific files
 cover.pdf
-CTAN_contrib.pdf
 
 # Ignore directories
 figures/
 include/
 fretplot/
-
+CTAN_contrib/
