@@ -40,4 +40,4 @@ The **fretplot** LuaTeX package provides batch generation of scale and chord dia
 
 ---
 
-📖 [Read the docs for more information](doc_fretplot.pdf)
+📖 [Read the documentation for more information](doc_fretplot.pdf)
