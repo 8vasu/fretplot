@@ -19,6 +19,10 @@
 # build.sh, cover.tex, and cover.svg.
 
 # Generate documentation.
+cat include/start.tex include/macro.demo/body.tex include/end.tex > include/macro.demo/full.tex
+cat include/start.tex include/amaj/body.tex include/end.tex > include/amaj/full.tex
+cat include/start.tex include/fretless/body.tex include/end.tex > include/fretless/full.tex
+cat include/start.tex include/custom.instrument/body.tex include/end.tex > include/custom.instrument/full.tex
 latexmk -lualatex="lualatex --shell-escape" doc_fretplot.tex
 
 # Generate the cover image.

@@ -14,9 +14,10 @@ _region_.prv/
 
 # Ignore specific files
 cover.pdf
+include/sclinclude.fp
+include/styles.fps
 
 # Ignore directories
 tikz/
-include/
 fretplot/
 CTAN_contrib/
