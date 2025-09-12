@@ -1,8 +1,13 @@
-# Ignore LaTeX auxiliary files
+# Ignore LaTeX build artefacts
 *.aux
 *.log
 *.out
 *.toc
+*.fls
+*.fdb_latexmk
+TAGS
+_region_.tex
+_region_.prv/
 
 # Ignore zip files
 *.zip
@@ -11,7 +16,7 @@
 cover.pdf
 
 # Ignore directories
-figures/
+tikz/
 include/
 fretplot/
 CTAN_contrib/

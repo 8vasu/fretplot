@@ -19,13 +19,14 @@
 # build.sh, cover.tex, and cover.svg.
 
 # Generate documentation.
-lualatex doc_fretplot.tex
+latexmk -lualatex="lualatex --shell-escape" doc_fretplot.tex
 
 # Generate the cover image.
-lualatex cover.tex
+latexmk -lualatex="lualatex --shell-escape" cover.tex
 pdf2svg cover.pdf cover.svg
 
 # Prepare zip for CTAN.
-mkdir fretplot
+mkdir -p fretplot
 cp fretplot.lua fretplot.sty doc_fretplot.tex doc_fretplot.pdf README.md LICENSE fretplot/
+rm -f fretplot.zip
 zip -r fretplot.zip fretplot

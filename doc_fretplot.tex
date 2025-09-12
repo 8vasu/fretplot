@@ -44,17 +44,6 @@
 \usepackage{listings}
 \usepackage{xcolor}
 
-\lstset{
-  language=[LaTeX]TeX,
-  basicstyle=\ttfamily\small,
-  keywordstyle=\color{blue}\bfseries,
-  commentstyle=\color{purple},
-  numbers=left,
-  backgroundcolor=\color{white},
-  breaklines=true,
-  showstringspaces=false
-}
-
 \lstdefinelanguage{fretplot}{
   emph={include,flip,void},
   morekeywords={onf0,sovf,zoom,rotn,numfrt,numstr,frets,strings,notes,barres,fx,sx,bx,nx,fl,sl,nl},
@@ -63,13 +52,13 @@
 }
 
 \lstset{
-  language=fretplot,
-  basicstyle=\ttfamily\small,
   keywordstyle=\color{blue}\bfseries,
   emphstyle=\color{brown}\bfseries,
   commentstyle=\color{purple},
-  numbers=left,
   backgroundcolor=\color{white},
+  numbers=left,
+  columns=flexible,
+  basicstyle=\scriptsize\ttfamily
 }
 
 \title{The \texttt{fretplot} package}
@@ -157,11 +146,12 @@ This package defines the following user-facing macros:
 
 \subsection{Examples}
 
-Create directories \texttt{include} and \texttt{figures} in the same directory as your main document.
+Create directories \texttt{include} and \texttt{tikz} in the same directory as your main document.
 
-\begin{lstlisting}[language={[LaTeX]TeX},basicstyle=\scriptsize\ttfamily,emphstyle=]
+\begin{lstlisting}[language={[LaTeX]TeX},emphstyle=]
 \documentclass[12pt,letterpaper]{article}
 \usepackage{fretplot}
+\usepackage{float} % for [H] placement specifier in figures
 
 \begin{document}
 
@@ -187,9 +177,9 @@ Create directories \texttt{include} and \texttt{figures} in the same directory a
 % Also test the TikZ file generation capability of
 % \fptotikz, although the rest of the code does not
 % depend on this. Note that this will merely create
-% the file figures/sclinclude.tex containing the
+% the file tikz/sclinclude.tex containing the
 % TikZ code, but not include it in the document.
-\fptotikz[figures/sclinclude.tex]{include/sclinclude.fp}
+\fptotikz[tikz/sclinclude.tex]{include/sclinclude.fp}
 
 \begin{figure}[H]
 \fpscale{parentroot=A|formulatype=i|formula=\fpmaj|mode=2|
@@ -202,7 +192,7 @@ includefpfile=include/sclinclude.fp}
 \end{document}
 \end{lstlisting}
 
-Compile the above code with \begin{center}\texttt{lualatex my\_document.tex}\end{center} to get the following output:
+Compile the above code with \begin{center}\texttt{lualatex --shell-escape my\_document.tex}\end{center} to get the following output:
 
 % Start of code for the first set of figures
 %--------------------------------------------
@@ -229,9 +219,9 @@ Compile the above code with \begin{center}\texttt{lualatex my\_document.tex}\end
 % Also test the TikZ file generation capability of
 % \fptotikz, although the rest of the code does not
 % depend on this. Note that this will merely create
-% the file figures/sclinclude.tex containing the
+% the file tikz/sclinclude.tex containing the
 % TikZ code, but not include it in the document.
-\fptotikz[figures/sclinclude.tex]{include/sclinclude.fp}
+\fptotikz[tikz/sclinclude.tex]{include/sclinclude.fp}
 
 \begin{figure}[H]
 \fpscale{parentroot=A|formulatype=i|formula=\fpmaj|mode=2|
@@ -244,7 +234,7 @@ includefpfile=include/sclinclude.fp}
 % End of code for the first set of figures
 %------------------------------------------
 
-Play around with the generated files \texttt{include/sclinclude.fp} and \texttt{include/styles.fps} to customize the B Dorian figure. You can also edit the generated Ti\textit{k}Z code \texttt{figures/sclinclude.tex} directly.
+Play around with the generated files \texttt{include/sclinclude.fp} and \texttt{include/styles.fps} to customize the B Dorian figure. You can also edit the generated Ti\textit{k}Z code \texttt{tikz/sclinclude.tex} directly.
 
 % Old experiments:
 %------------------
@@ -604,7 +594,7 @@ Style& List of PGF/Ti\textit{k}Z styles delimited by single \texttt{,} (comma) c
 
 The following is an example fretplot file that demonstrates the use of some parameters and operations.
 
-\begin{lstlisting}[language=fretplot,basicstyle=\scriptsize\ttfamily]
+\begin{lstlisting}[language=fretplot]
 # Example comment line
 zoom 1.0
 rotn 0
@@ -651,7 +641,7 @@ flip onf0
 
 The following fretplot file describes the A major triad barre chord, but strings and frets are not labelled for simplicity:
 
-\begin{lstlisting}[language=fretplot,basicstyle=\scriptsize\ttfamily]
+\begin{lstlisting}[language=fretplot]
 rotn -90
 
 # A major triad barre chord
@@ -682,9 +672,10 @@ nl<1,5> {\scriptsize A}
 
 Save the above fretplot file as \texttt{amaj.fp}. Include it in a \LaTeX\ document as follows:
 
-\begin{lstlisting}[language={[LaTeX]TeX},basicstyle=\scriptsize\ttfamily]
+\begin{lstlisting}[language={[LaTeX]TeX},emphstyle=]
 \documentclass[12pt,letterpaper]{article}
 \usepackage{fretplot}
+\usepackage{float} % for [H] placement specifier in figures
 
 \begin{document}
 
@@ -697,7 +688,7 @@ Save the above fretplot file as \texttt{amaj.fp}. Include it in a \LaTeX\ docume
 \end{document}
 \end{lstlisting}
 
-Compile the above code with \begin{center}\texttt{lualatex my\_document.tex}\end{center} to get the following output:
+Compile the above code with \begin{center}\texttt{lualatex --shell-escape my\_document.tex}\end{center} to get the following output:
 
 \begin{figure}[H]
 \centering
@@ -737,7 +728,7 @@ A \textit{fretplot scale style file}, \textit{fps file}, or \texttt{.fps} file c
 
 \subsection{An example}
 
-\begin{lstlisting}[commentstyle=,basicstyle=\scriptsize\ttfamily,numbers=left]
+\begin{lstlisting}[commentstyle=]
 lC {\scriptsize C}
 lC# {\tiny C$\sharp$}
 lD {\scriptsize D}
