@@ -1,5 +1,6 @@
 <!--
 README.md
+fretplot v0.0.2
 Copyright 2025-- Soumendra Ganguly
 
 This work may be distributed and/or modified under the
