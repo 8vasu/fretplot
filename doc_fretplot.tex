@@ -1,5 +1,5 @@
 %% doc_fretplot.tex
-%% fretplot v0.0.2
+%% fretplot v0.0.3
 %% Copyright 2025-- Soumendra Ganguly
 %
 % This work may be distributed and/or modified under the
@@ -63,25 +63,38 @@
   basicstyle=\scriptsize\ttfamily
 }
 
+% \newcommand{\fpdocexample}[1]{
+% \captionsetup{font=scriptsize}
+
+% \begin{minipage}[t]{0.65\textwidth}
+% {\scriptsize \uline{Save source below as \texttt{include/#1/src.fp}:}}
+% \lstinputlisting[language=fretplot]{include/#1/src.fp}
+
+% {\scriptsize \uline{Run \texttt{lualatex --shell-escape #1.tex} after saving source below as \texttt{#1.tex} to get output on the right:}}
+% \lstinputlisting[language={[LaTeX]TeX},emphstyle=]{include/#1/full.tex}
+% \end{minipage}
+% \hfill
+% \begin{minipage}[t]{0.35\textwidth}
+% \input{include/#1/body.tex}
+% \end{minipage}
+
+% \captionsetup{font=normalsize}
+% }
+
 \newcommand{\fpdocexample}[1]{
 \captionsetup{font=scriptsize}
 
-\begin{minipage}[t]{0.65\textwidth}
-{\scriptsize \uline{Save source below as \texttt{include/#1/src.fp}:}}
+{\scriptsize \raisebox{1pt}{\bullet}\ Save source below as \texttt{\color{purple} proj/include/#1/src.fp}:}
 \lstinputlisting[language=fretplot]{include/#1/src.fp}
-
-{\scriptsize \uline{Run \texttt{lualatex --shell-escape #1.tex} after saving source below as \texttt{#1.tex} to get output on the right:}}
+{\scriptsize \raisebox{1pt}{\bullet}\ Save source below as \texttt{\color{purple} proj/#1.tex}:}
 \lstinputlisting[language={[LaTeX]TeX},emphstyle=]{include/#1/full.tex}
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.35\textwidth}
+{\scriptsize \raisebox{1pt}{\bullet}\ Run \texttt{\color{purple} lualatex\,\,\,--shell-escape\,\,\,#1.tex} in \texttt{\color{blue} proj/} to get the following output:}
 \input{include/#1/body.tex}
-\end{minipage}
 
 \captionsetup{font=normalsize}
 }
 
-\title{The \texttt{fretplot} package\\\large Version 0.0.2}
+\title{The \texttt{fretplot} package\\\large Version 0.0.3}
 \author{Author and maintainer: Soumendra Ganguly\\\href{https://soumendraganguly.com}{\texttt{soumendraganguly.com}}}
 \date{Copyright 2025-- Soumendra Ganguly}
 
@@ -116,9 +129,9 @@ This package defines the following user-facing macros:
 \subsection{\texttt{\textbackslash fptotikz}}
 
 \begin{itemize}
-  \item[] \uline{Syntax:} \texttt{\textbackslash fptotikz[OUTPUT\_TIKZ\_FILE]\{INPUT\_FP\_FILE\}}
-  \item[] \uline{Description:} compile an input fretplot file to Ti\textit{k}Z.
-  \item[] \uline{Arguments:}
+  \item[] \textbf{\color{blue} Syntax:} \texttt{\textbackslash fptotikz[OUTPUT\_TIKZ\_FILE]\{INPUT\_FP\_FILE\}}
+  \item[] \textbf{\color{blue} Description:} compile an input fretplot file to Ti\textit{k}Z.
+  \item[] \textbf{\color{blue} Arguments:}
     \begin{itemize}
       \item \texttt{INPUT\_FP\_FILE}: path to input fretplot file.
       \item \texttt{OUTPUT\_TIKZ\_FILE} (optional): path to output file to which generated Ti\textit{k}Z will be written. If \texttt{OUTPUT\_TIKZ\_FILE} is not specified, then the output Ti\textit{k}Z code will be included inline at the location of the \texttt{\textbackslash fptotikz} invocation.
@@ -128,25 +141,25 @@ This package defines the following user-facing macros:
 \subsection{\texttt{\textbackslash fptemplate}}
 
 \begin{itemize}
-  \item[] \uline{Syntax:} \texttt{\textbackslash fptemplate\{OUTPUT\_FP\_FILE\}}
-  \item[] \uline{Description:} generate a template fretplot file.
-  \item[] \uline{Arguments:} \texttt{OUTPUT\_FP\_FILE}: path to output fretplot file.
+  \item[] \textbf{\color{blue} Syntax:} \texttt{\textbackslash fptemplate\{OUTPUT\_FP\_FILE\}}
+  \item[] \textbf{\color{blue} Description:} generate a template fretplot file.
+  \item[] \textbf{\color{blue} Arguments:} \texttt{OUTPUT\_FP\_FILE}: path to output fretplot file.
 \end{itemize}
 
 \subsection{\texttt{\textbackslash fpstemplate}}
 
 \begin{itemize}
-  \item[] \uline{Syntax:} \texttt{\textbackslash fpstemplate\{OUTPUT\_FPS\_FILE\}}
-  \item[] \uline{Description:} generate a template fretplot scale style file.
-  \item[] \uline{Arguments:} \texttt{OUTPUT\_FPS\_FILE}: path to output fretplot scale style file.
+  \item[] \textbf{\color{blue} Syntax:} \texttt{\textbackslash fpstemplate\{OUTPUT\_FPS\_FILE\}}
+  \item[] \textbf{\color{blue} Description:} generate a template fretplot scale style file.
+  \item[] \textbf{\color{blue} Arguments:} \texttt{OUTPUT\_FPS\_FILE}: path to output fretplot scale style file.
 \end{itemize}
 
 \subsection{\texttt{\textbackslash fpscale}}
 
 \begin{itemize}
-  \item[] \uline{Syntax:} \texttt{\textbackslash fpscale\{ARGS\}}
-  \item[] \uline{Description:} render diagram of (mode of) scale based on input scale formula (degree, pitch class, or interval) or generate corresponding fretplot file or Ti\textit{k}Z code.
-  \item[] \uline{Arguments:} \texttt{ARGS}: \texttt{|} and/or \texttt{|\textbackslash n}-delimited list (possibly empty) of named argument assignments of the form \texttt{key=value} (with no surrounding spaces) in any order. Some of the subsequent pages of this section contain 2 tables:
+  \item[] \textbf{\color{blue} Syntax:} \texttt{\textbackslash fpscale\{ARGS\}}
+  \item[] \textbf{\color{blue} Description:} render diagram of (mode of) scale based on input scale formula (degree, pitch class, or interval) or generate corresponding fretplot file or Ti\textit{k}Z code.
+  \item[] \textbf{\color{blue} Arguments:} \texttt{ARGS}: \texttt{|} and/or \texttt{|\textbackslash n}-delimited list (possibly empty) of named argument assignments of the form \texttt{key=value} (with no surrounding spaces) in any order. Some of the subsequent pages of this section contain 2 tables:
     \begin{itemize}
     \item A complete table of keys for \texttt{ARGS} and their respective default and possible values. If a key does not have a default value, then the corresponding entry in the table is empty.
         \begin{itemize}
@@ -166,15 +179,26 @@ This package defines the following user-facing macros:
 
 \subsection{Examples}
 
-Create directories \texttt{include} and \texttt{tikz} in the same directory as your main document.
+Create a directory titled \texttt{proj}. Create subdirectories \texttt{proj/include} and \texttt{proj/tikz}. Create a file \texttt{proj/macro-demo.tex}. So your project directory structure is as follows:
 
-\lstinputlisting[language={[LaTeX]TeX},emphstyle=]{include/macro.demo/full.tex}
+\begin{verbatim}
+proj/
+|-- include/
+|-- tikz/
+|-- macro-demo.tex
+\end{verbatim}
 
-Compile the above code with \begin{center}\texttt{lualatex --shell-escape my\_document.tex}\end{center} to get the following output:
+Copy the following code into \texttt{proj/macro-demo.tex}:
 
-\input{include/macro.demo/body.tex}
+\lstinputlisting[language={[LaTeX]TeX},emphstyle=]{include/macro-demo/full.tex}
 
-Play around with the generated files \texttt{include/sclinclude.fp} and \texttt{include/styles.fps} to customize the B Dorian figure. You can also edit the generated Ti\textit{k}Z code \texttt{tikz/sclinclude.tex} directly.
+Run the following command in \texttt{proj/} to compile \texttt{proj/macro-demo.tex}: \begin{center}\texttt{lualatex --shell-escape macro-demo.tex}\end{center}
+
+You should get the following output in the compiled PDF file \texttt{proj/macro-demo.pdf}:
+
+\input{include/macro-demo/body.tex}
+
+Play around with the generated files \texttt{proj/include/sclinclude.fp} and\\\texttt{proj/include/styles.fps} to customize the B Dorian figure. You can also edit the generated Ti\textit{k}Z code \texttt{proj/tikz/sclinclude.tex} directly.
 
 % Old experiments:
 %------------------
@@ -528,7 +552,7 @@ The operations are particularly useful for batch manipulation of diagrams.\\
 
 For example, say, you are writing a book containing 100 chord diagrams. Each of those diagrams is described using its own fretplot file. Now you want to scale/enlarge each of them to 1.5 times of their respective original sizes, and additionally you want to rotate all of them by 30 degrees.\\
 
-To do this, in each of those 100 fretplot files you can include another common fretplot file, say, \texttt{common.fp} by writing \texttt{include common.fp} \uline{at the end} of all of those 100 fretplot files, and then in \texttt{common.fp} you can write the following two lines:\\
+To do this, in each of those 100 fretplot files you can include another common fretplot file, say, \texttt{common.fp} by writing \texttt{include common.fp} \textit{at the end} of all of those 100 fretplot files, and then in \texttt{common.fp} you can write the following two lines:\\
 
 \begin{lstlisting}[language=fretplot]
 +rotn 30
@@ -537,11 +561,11 @@ To do this, in each of those 100 fretplot files you can include another common f
 
 This will rotate all those 100 diagrams by 30 degrees and zoom in by a factor of 1.5, without you having to edit each of those 100 files individually.\\
 
-\uline{Please note} that lines in a fretplot file are interpreted sequentially, so the location where you write \texttt{include common.fp} in a fretplot file matters due to non-commutativity of certain operations. For instance, if the parameter \texttt{rotn} was \texttt{10} and you wanted to multiply it by \texttt{2} and subtract \texttt{5} from it, the order in which you performed those operations would matter.\\
+\textit{Please note} that lines in a fretplot file are interpreted sequentially, so the location where you write \texttt{include common.fp} in a fretplot file matters due to non-commutativity of certain operations. For instance, if the parameter \texttt{rotn} was \texttt{10} and you wanted to multiply it by \texttt{2} and subtract \texttt{5} from it, the order in which you performed those operations would matter.\\
 
 The following is an example fretplot file that demonstrates the use of some parameters and some operations on them:\\
 
-\lstinputlisting[language=fretplot]{include/operations.demo.fp}
+\lstinputlisting[language=fretplot]{include/operations-demo.fp}
 
 \subsection{Example: barre chord diagram}
 
@@ -553,7 +577,7 @@ The following is an example fretplot file that demonstrates the use of some para
 
 \subsection{Example: custom instrument diagram}
 
-\fpdocexample{custom.instrument}
+\fpdocexample{custom-instrument}
 
 \newpage
 

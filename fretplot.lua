@@ -1,5 +1,5 @@
 --- fretplot.lua
---- fretplot v0.0.2
+--- fretplot v0.0.3
 --- Copyright 2025-- Soumendra Ganguly
 --
 -- This work may be distributed and/or modified under the

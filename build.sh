@@ -1,6 +1,6 @@
 #!/bin/sh
 ## build.sh
-## fretplot v0.0.2
+## fretplot v0.0.3
 ## Copyright 2025-- Soumendra Ganguly
 #
 # This work may be distributed and/or modified under the
@@ -20,10 +20,10 @@
 # build.sh, cover.tex, and cover.svg.
 
 # Generate documentation.
-cat include/start.tex include/macro.demo/body.tex include/end.tex > include/macro.demo/full.tex
-cat include/start.tex include/amaj/body.tex include/end.tex > include/amaj/full.tex
-cat include/start.tex include/fretless/body.tex include/end.tex > include/fretless/full.tex
-cat include/start.tex include/custom.instrument/body.tex include/end.tex > include/custom.instrument/full.tex
+for name in macro-demo amaj fretless custom-instrument
+do
+    cat include/start.tex include/${name}/body.tex include/end.tex > include/${name}/full.tex
+done
 latexmk -lualatex="lualatex --shell-escape" doc_fretplot.tex
 
 # Generate the cover image.
