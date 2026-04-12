@@ -41,6 +41,6 @@ The **fretplot** LuaTeX package provides batch generation of scale and chord dia
 
 ---
 
-📖 [Read the documentation for more information](doc_fretplot.pdf)
-🤖 [MCP server to generate fretplot code using natural language](https://github.com/8vasu/fretplot-mcp)
+📖 [Read the documentation for more information](doc_fretplot.pdf)<br>
+🤖 [MCP server to generate fretplot code using natural language](https://github.com/8vasu/fretplot-mcp)<br>
 📜 [Featured in La Lettre GUTenberg](https://publications.gutenberg-asso.fr/lettre/article/view/131)
