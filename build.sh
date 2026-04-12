@@ -1,7 +1,7 @@
 #!/bin/sh
 ## build.sh
-## fretplot v0.0.3
-## Copyright 2025-- Soumendra Ganguly
+## fretplot v1.0.0
+## Copyright 2025 Soumendra Ganguly
 #
 # This work may be distributed and/or modified under the
 # conditions of the LaTeX Project Public License, either version 1.3

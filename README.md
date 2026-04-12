@@ -1,7 +1,7 @@
 <!--
 README.md
-fretplot v0.0.3
-Copyright 2025-- Soumendra Ganguly
+fretplot v1.0.0
+Copyright 2025 Soumendra Ganguly
 
 This work may be distributed and/or modified under the
 conditions of the LaTeX Project Public License, either version 1.3
@@ -24,21 +24,23 @@ doc_fretplot.tex, doc_fretplot.pdf, README.md, and LICENSE.
 <img src="cover.svg" alt="CoverImage" width="1000" />
 
 **Author and maintainer:** [Soumendra Ganguly](https://soumendraganguly.com)  
-**Copyright 2025– Soumendra Ganguly**
+**Copyright 2025 Soumendra Ganguly**
 
 ---
 
 The **fretplot** LuaTeX package provides batch generation of scale and chord diagrams for plucked string instruments, such as the guitar.
 
-- **Flexible & Automated:**  
+- **Flexible & automated:**  
   Highly customizable and automatable via simple, powerful file formats for describing fretboard diagrams. Easily generate batches of diagrams.
 
-- **Attractive Defaults:**  
+- **Attractive defaults:**  
   Comes with sensible, visually appealing default settings.
 
-- **Music Theory Aware:**  
+- **Music theory aware:**  
   Includes easy-to-use LaTeX macros that understand music theory. Render guitar scale diagrams by specifying the musical scale or scale type via built in macros or directly via degree, pitch class, or interval formulae.
 
 ---
 
 📖 [Read the documentation for more information](doc_fretplot.pdf)
+🤖 [MCP server to generate fretplot code using natural language](https://github.com/8vasu/fretplot-mcp)
+📜 [Featured in La Lettre GUTenberg](https://publications.gutenberg-asso.fr/lettre/article/view/131)
