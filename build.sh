@@ -20,6 +20,7 @@
 # build.sh, cover.tex, and cover.svg.
 
 # Generate documentation.
+mkdir -p tikz
 for name in macro-demo amaj fretless custom-instrument
 do
     cat include/start.tex include/${name}/body.tex include/end.tex > include/${name}/full.tex
