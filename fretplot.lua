@@ -594,7 +594,7 @@ local function fretplot_to_tikz(fretplot_file_path, tikz_file_path)
 
    -- compile to tikz
    if not tikz_file_path or tikz_file_path == "" then
-      compile_to_tikz(board_data, tex.sprint)
+      compile_to_tikz(board_data, function(s) tex.sprint((s:gsub("\n", ""))) end)
    else
       tikz_file_handle = io.open(tikz_file_path, "w")
       orig_stdout = io.output()
